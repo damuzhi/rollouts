@@ -386,6 +386,14 @@ spec:
                                     current support nginx, aliyun-alb. default is
                                     nginx.
                                   type: string
+                                groupOrder:
+                                  description: GroupOrder sets the priority order for AWS
+                                    ALB Ingress group. This annotation is used to control
+                                    the order of Ingress rules within the same ALB group.
+                                    Lower values have higher priority. Only applicable for
+                                    AWS ALB (classType: aws-alb).
+                                  format: int32
+                                  type: integer
                                 name:
                                   description: Name refers to the name of an `Ingress`
                                     resource in the same namespace as the `Rollout`
@@ -971,6 +979,14 @@ spec:
                                     current support nginx, aliyun-alb. default is
                                     nginx.
                                   type: string
+                                groupOrder:
+                                  description: GroupOrder sets the priority order for AWS
+                                    ALB Ingress group. This annotation is used to control
+                                    the order of Ingress rules within the same ALB group.
+                                    Lower values have higher priority. Only applicable for
+                                    AWS ALB (classType: aws-alb).
+                                  format: int32
+                                  type: integer
                                 name:
                                   description: Name refers to the name of an `Ingress`
                                     resource in the same namespace as the `Rollout`
@@ -1394,6 +1410,14 @@ spec:
                                     current support nginx, aliyun-alb. default is
                                     nginx.
                                   type: string
+                                groupOrder:
+                                  description: GroupOrder sets the priority order for AWS
+                                    ALB Ingress group. This annotation is used to control
+                                    the order of Ingress rules within the same ALB group.
+                                    Lower values have higher priority. Only applicable for
+                                    AWS ALB (classType: aws-alb).
+                                  format: int32
+                                  type: integer
                                 name:
                                   description: Name refers to the name of an `Ingress`
                                     resource in the same namespace as the `Rollout`
