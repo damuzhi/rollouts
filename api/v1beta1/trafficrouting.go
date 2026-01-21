@@ -40,6 +40,11 @@ type IngressTrafficRouting struct {
 	ClassType string `json:"classType,omitempty"`
 	// Name refers to the name of an `Ingress` resource in the same namespace as the `Rollout`
 	Name string `json:"name"`
+	// GroupOrder sets the priority order for AWS ALB Ingress group.
+	// This annotation is used to control the order of Ingress rules within the same ALB group.
+	// Lower values have higher priority. Only applicable for AWS ALB (classType: aws-alb).
+	// +optional
+	GroupOrder *int32 `json:"groupOrder,omitempty"`
 }
 
 // GatewayTrafficRouting configuration for gateway api

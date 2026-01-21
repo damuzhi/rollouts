@@ -183,6 +183,13 @@ func (r *ingressController) buildCanaryIngress(stableIngress *netv1.Ingress) *ne
 	hosts := sets.NewString()
 	// Ensure canaryIngress is owned by this Rollout for cleanup
 	desiredCanaryIngress.SetOwnerReferences([]metav1.OwnerReference{r.conf.OwnerRef})
+	// Apply group order annotation for AWS ALB if configured
+	if r.conf.TrafficConf.GroupOrder != nil {
+		if desiredCanaryIngress.Annotations == nil {
+			desiredCanaryIngress.Annotations = make(map[string]string)
+		}
+		desiredCanaryIngress.Annotations["alb.ingress.kubernetes.io/group.order"] = fmt.Sprintf("%d", *r.conf.TrafficConf.GroupOrder)
+	}
 	// Copy only the rules which reference the stableService from the stableIngress to the canaryIngress
 	// and change service backend to canaryService. Rules **not** referencing the stableIngress will be ignored.
 	for ir := 0; ir < len(stableIngress.Spec.Rules); ir++ {

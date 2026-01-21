@@ -1,0 +1,33 @@
+apiVersion: rollouts.kruise.io/v1beta1
+kind: Rollout
+metadata:
+  name: canary-test
+  namespace: centersys-release
+spec:
+  workloadRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: canary-test
+  strategy:
+    canary:
+      enableExtraWorkloadForCanary: true
+      steps:
+        - replicas: 2
+          matches:
+            - headers:
+                - name: "cookie"
+                  type: Exact
+                  value: "starrycloud-canary=always"
+          pause: {}
+      patchPodTemplateMetadata:
+        labels:
+          kruise-rollout-canary: "true"
+      trafficRoutings:
+        - service: canary-test
+          ingress:
+            classType: aws-alb
+            name: canary-test
+            # 设置 AWS ALB Ingress 组的优先级
+            # 数值越小优先级越高，用于控制同一 ALB 组内 Ingress 规则的顺序
+            # 这个注解会被添加到 canary ingress 上：alb.ingress.kubernetes.io/group.order: "1"
+            groupOrder: 1

@@ -134,6 +134,7 @@ func ConversionToV1beta1TrafficRoutingRef(src TrafficRoutingRef) (dst v1beta1.Tr
 		dst.Ingress = &v1beta1.IngressTrafficRouting{
 			ClassType: src.Ingress.ClassType,
 			Name:      src.Ingress.Name,
+			GroupOrder: src.Ingress.GroupOrder,
 		}
 	}
 	if src.Gateway != nil {
@@ -294,6 +295,7 @@ func ConversionToV1alpha1TrafficRoutingRef(src v1beta1.TrafficRoutingRef) (dst T
 		dst.Ingress = &IngressTrafficRouting{
 			ClassType: src.Ingress.ClassType,
 			Name:      src.Ingress.Name,
+			GroupOrder: src.Ingress.GroupOrder,
 		}
 	}
 	if src.Gateway != nil {
