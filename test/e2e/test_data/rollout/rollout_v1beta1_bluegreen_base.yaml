@@ -1,0 +1,26 @@
+apiVersion: rollouts.kruise.io/v1beta1 # we use v1beta1
+kind: Rollout
+metadata:
+  name: rollouts-demo
+spec:
+  workloadRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: echoserver
+  strategy:
+    blueGreen:
+      steps:
+      - replicas: 50%
+        traffic: 0%
+        pause: {}
+      - replicas: 100%
+        traffic: 0%
+      - replicas: 100%
+        traffic: 50%
+      - replicas: 100%
+        traffic: 100%
+      trafficRoutings:
+      - service: echoserver
+        ingress:
+          classType: nginx
+          name: echoserver

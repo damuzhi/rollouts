@@ -1,0 +1,126 @@
+rollout:
+  apiVersion: rollouts.kruise.io/v1beta1
+  kind: Rollout
+  metadata:
+    name: rollouts-demo
+  spec:
+    workloadRef:
+      apiVersion: apps/v1
+      kind: Deployment
+      name: deploy-demo
+    strategy:
+      canary:
+        steps:
+        - matches:
+          - headers:
+            - type: Exact
+              name: user-agent
+              value: pc
+            - type: RegularExpression
+              name: name
+              value: ".*demo"
+          requestHeaderModifier:
+            set:
+            - name: "header-foo"
+              value: "bar"
+        - matches:
+          - headers:
+            - type: Exact
+              name: user-agent
+              value: pc
+          - headers:
+            - type: RegularExpression
+              name: name
+              value: ".*demo"
+        - traffic: "50%"
+        trafficRoutings:
+        - service: svc-demo
+          customNetworkRefs:
+          - apiVersion: networking.istio.io/v1alpha3
+            kind: VirtualService
+            name: vs-demo
+original:
+  apiVersion: networking.istio.io/v1alpha3
+  kind: VirtualService
+  metadata:
+    name: vs-demo
+  spec:
+    hosts:
+    - "*"
+    gateways:
+    - nginx-gateway
+    http:
+    - route:
+      - destination:
+          host: svc-demo
+expected:
+  - apiVersion: networking.istio.io/v1alpha3
+    kind: VirtualService
+    metadata:
+      name: vs-demo
+    spec:
+      hosts:
+      - "*"
+      gateways:
+      - nginx-gateway
+      http:
+      - match:
+        - headers:
+            user-agent:
+              exact: pc
+            name:
+              regex: .*demo
+        headers:
+          request:
+            set:
+              header-foo: bar
+        route:
+        - destination:
+            host: svc-demo-canary
+      - route:
+        - destination:
+            host: svc-demo
+  - apiVersion: networking.istio.io/v1alpha3
+    kind: VirtualService
+    metadata:
+      name: vs-demo
+    spec:
+      hosts:
+      - "*"
+      gateways:
+      - nginx-gateway
+      http:
+      - match:
+        - headers:
+            name:
+              regex: .*demo
+        route:
+        - destination:
+            host: svc-demo-canary
+      - match:
+        - headers:
+            user-agent:
+              exact: pc
+        route:
+        - destination:
+            host: svc-demo-canary
+      - route:
+        - destination:
+            host: svc-demo
+  - apiVersion: networking.istio.io/v1alpha3
+    kind: VirtualService
+    metadata:
+      name: vs-demo
+    spec:
+      hosts:
+      - "*"
+      gateways:
+      - nginx-gateway
+      http:
+      - route:
+        - destination:
+            host: svc-demo
+          weight: 50
+        - destination:
+            host: svc-demo-canary
+          weight: 50
